@@ -61,6 +61,10 @@ ah.proxy({
     			var str = JSON.stringify(item);
     			pfStr+=i+":"+str+"<br>";
     		});
+            if(result.pfList.length==0) {
+                pfStr = "无（注：仅供出口）"
+                pfObjonly = "无（注：仅供出口） "
+            }
             //生产企业
             jQuery.each(result.sjscqyList,function(i,item){
     			sjqy.push(item.enterprise_name);
