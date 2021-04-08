@@ -26,7 +26,7 @@ ah.proxy({
     //请求成功后进入
     onResponse: (response, handler) => {
         let result = JSON.parse(response.response)
-        if (result.actual_enter_address != undefined) {
+        if (result.productname != undefined && result.productname != "") {
             var cas=0;//配方编号
     		var ylid=1;//成分编号
     		var khFlag=true;
@@ -78,6 +78,17 @@ ah.proxy({
                 type: 'POST',
                 url: "http://127.0.0.1:5000/postIngredientdata",
                 data: {'productname': result.productname, 'processid': response.config.body.substr(10), 'ingredients_lt': pfObjonly.substr(0, pfObjonly.length-1), 'brandowner': result.scqyUnitinfo.enterprise_name, 'manufactures': JSON.stringify(sjqy), 'cancellation':off},
+                success: function(res) {
+                    // console.log('done');
+                }
+            });
+        } else if (result.productname == "") {
+            alert('no data')
+            //删除这条数据
+            $.ajax({
+                type: 'POST',
+                url: "http://127.0.0.1:5000/deletenewrecord",
+                data: {'processid': result.processid},
                 success: function(res) {
                     // console.log('done');
                 }
