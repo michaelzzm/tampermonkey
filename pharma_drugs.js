@@ -65,7 +65,7 @@ ah.proxy({
     },
     //请求成功后进入
     onResponse: (response, handler) => {
-        if (response.status == 502) {
+        if (response.status == 502 || response.status == 504) {
             handler.next(response)
             $('#keyword').val(cur_drug)
             keywordSubmit()
