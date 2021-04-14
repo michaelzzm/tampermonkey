@@ -82,8 +82,35 @@ ah.proxy({
             }
             var list = $($.parseHTML(response.response)).find('tr td a')
             for(var j=0;j<list.length;j++) {
-                console.log(list[j])
+                // console.log(list[j])
+                var dict_obj = new Object()
+                var lt_number = new Array()
+                var lt_item = list[j].innerText.split(/[.|(|)|\s|；]/)
+                for (var k=1;k<lt_item.length;k++) {
+                    if (lt_item[k] == "") {}
+                    else if (lt_item[k][0] == 8 && lt_item[k].length == 14) {
+                        lt_number.push(lt_item[k])
+                    }
+                }
+                var keyword = ""
+                var url = response.config.body.indexOf('keyword')> 0 ? response.config.body.substr(response.config.body.indexOf('keyword')+8) : '&'
+                keyword = url.substr(0,url.indexOf('&'))
+                console.log('id', list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4), cur_drug, 'number', JSON.stringify(lt_number), 'company', lt_item[lt_item.length-3], 'registration', lt_item[lt_item.length-2], 'href', list[j].href)
                 //发送到pharma_website的数据库中
+                dict_obj['id'] = list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4)
+                dict_obj['drug'] = keyword
+                dict_obj['medical_number'] = lt_number
+                dict_obj['company'] = lt_item[lt_item.length-3]
+                dict_obj['registration'] = lt_item[lt_item.length-2]
+                dict_obj['href'] = encodeURIComponent(list[j].href)
+                $.ajax({
+                    type: 'POST',
+                    url: "http://127.0.0.1:5000/insertpharmadata",
+                    data: JSON.stringify(dict_obj),
+                    success: function(res) {
+                        alert('done')
+                    }
+                });
             }
             if (cur_page == undefined && cnt_page == undefined) {
                 var str_page = $($.parseHTML(response.response)).find('form').first().attr('action').substr(18)
