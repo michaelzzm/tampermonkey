@@ -16,7 +16,9 @@
 
     var dic_data = new Object()
 
-    let company_name = $('div.row.title.jk-tip h1').text()
+    // let keynumber = document.baseURI.substr(25, document.baseURI.length - document.baseURI.indexOf('.html') + 25)
+    let keynumber = document.baseURI.substr(25, 32)
+    let company_name = $('div.row.title.jk-tip h1').text() == "" ? $('div.row.title h1').text() : $('div.row.title.jk-tip h1').text()
     var lt_tags = new Array()
     jQuery.each($('div.row.tags span') ,function(i,item){
         if (item.innerText.length>0 && item.innerText.indexOf('自身')<0 && item.innerText.indexOf('司法')<0) {
@@ -33,8 +35,9 @@
     jQuery.each($('div.row.gtag a') ,function(i,item){
         lt_gtabs.push(item.innerText)
     })
-    let company_intro = encodeURI($('span.cvlu.introExpand').text().replace('收起',''))
+    let company_intro = encodeURI($('span.cvlu.introExpand').text().replaceAll('\"','\'').replace('收起',''))
 
+    dic_data['KeyNo'] = keynumber
     dic_data['公司名称'] = company_name
     dic_data['企查查快捷'] = lt_tags
     dic_data['电话'] = phone
