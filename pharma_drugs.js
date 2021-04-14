@@ -18,7 +18,7 @@ var lt_drugs
 (function() {
     'use strict'
 
-    lt_drugs = ['Pantoprazole Sodium']
+    lt_drugs = ['Abacavir Sulfate']
 
     for(var drug in lt_drugs) {
         console.log(lt_drugs[drug])
@@ -73,44 +73,48 @@ ah.proxy({
         }
         else {
             // console.log(response.response)
-            let paras = response.config.body.split('&')
-            var cur_page
-            for(var i=0;i<paras.length;i++) {
-                if (paras[i].indexOf('curstart=')==0) {
-                    cur_page = parseInt(paras[i].substr(9))
-                }
-            }
-            var list = $($.parseHTML(response.response)).find('tr td a')
-            for(var j=0;j<list.length;j++) {
-                // console.log(list[j])
-                var dict_obj = new Object()
-                var lt_number = new Array()
-                var lt_item = list[j].innerText.split(/[.|(|)|\s|；]/)
-                for (var k=1;k<lt_item.length;k++) {
-                    if (lt_item[k] == "") {}
-                    else if (lt_item[k][0] == 8 && lt_item[k].length == 14) {
-                        lt_number.push(lt_item[k])
+            if (response.response.indexOf('"code": 200') > -1) {}
+            else {
+                let paras = response.config.body.split('&')
+                var cur_page
+                for(var i=0;i<paras.length;i++) {
+                    if (paras[i].indexOf('curstart=')==0) {
+                        cur_page = parseInt(paras[i].substr(9))
                     }
                 }
-                var keyword = ""
-                var url = response.config.body.indexOf('keyword')> 0 ? response.config.body.substr(response.config.body.indexOf('keyword')+8) : '&'
-                keyword = url.substr(0,url.indexOf('&'))
-                console.log('id', list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4), cur_drug, 'number', JSON.stringify(lt_number), 'company', lt_item[lt_item.length-3], 'registration', lt_item[lt_item.length-2], 'href', list[j].href)
-                //发送到pharma_website的数据库中
-                dict_obj['id'] = list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4)
-                dict_obj['drug'] = keyword
-                dict_obj['medical_number'] = lt_number
-                dict_obj['company'] = lt_item[lt_item.length-3]
-                dict_obj['registration'] = lt_item[lt_item.length-2]
-                dict_obj['href'] = encodeURIComponent(list[j].href)
-                $.ajax({
-                    type: 'POST',
-                    url: "http://127.0.0.1:5000/insertpharmadata",
-                    data: JSON.stringify(dict_obj),
-                    success: function(res) {
-                        alert('done')
+                var list = $($.parseHTML(response.response)).find('tr td a')
+                for(var j=0;j<list.length;j++) {
+                    // console.log(list[j])
+                    var dict_obj = new Object()
+                    var lt_number = new Array()
+                    var cur_line = list[j].innerText
+                    var lt_item = cur_line.substr(0, cur_line.length-1).replace(/ \(/, ' [').split(/[.| [|\s|；]/)
+                    for (var k=1;k<lt_item.length;k++) {
+                        if (lt_item[k] == "") {}
+                        else if (lt_item[k][0] == 8 && lt_item[k].length == 14) {
+                            lt_number.push(lt_item[k])
+                        }
                     }
-                });
+                    var keyword = ""
+                    var url = response.config.body.indexOf('keyword')> 0 ? response.config.body.substr(response.config.body.indexOf('keyword')+8) : '&'
+                    keyword = url.substr(0,url.indexOf('&'))
+                    console.log('id', list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4), cur_drug, 'number', JSON.stringify(lt_number), 'company', lt_item[lt_item.length-3], 'registration', lt_item[lt_item.length-2], 'href', list[j].href)
+                    //发送到pharma_website的数据库中
+                    dict_obj['id'] = list[j].href.substr(list[j].href.indexOf('&Id=') + 4, list[j].href.lastIndexOf('\'') - list[j].href.indexOf('&Id=') - 4)
+                    dict_obj['drug'] = keyword
+                    dict_obj['medical_number'] = lt_number
+                    dict_obj['company'] = lt_item[lt_item.length-2]
+                    dict_obj['registration'] = lt_item[lt_item.length-1]
+                    dict_obj['href'] = encodeURIComponent(list[j].href)
+                    $.ajax({
+                        type: 'POST',
+                        url: "http://127.0.0.1:5000/insertpharmadata",
+                        data: JSON.stringify(dict_obj),
+                        success: function(res) {
+                            // alert('done')
+                        }
+                    });
+                }
             }
             if (cur_page == undefined && cnt_page == undefined) {
                 var str_page = $($.parseHTML(response.response)).find('form').first().attr('action').substr(18)
