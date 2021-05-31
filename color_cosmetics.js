@@ -39,40 +39,42 @@ ah.proxy({
 
                 console.log(cur_page, 'doing')
             }
-        }
 
-        let result = JSON.parse(response.response)
-        let company_list = result.list
+            let result = JSON.parse(response.response)
+            let company_list = result.list
 
-        var dict_records = []
+            var dict_records = []
 
-        for (let item in company_list) {
-            let cur_line = company_list[item]
-            let off = item.is_off =="Y" ? "（已注销）":"";
-            let cur_applySn = cur_line.applySn + "" + off
-            let cur_url = baseURL + "itownet/hzp_ba/fw/pz.jsp?processid=" + cur_line.processid + "&nid=" + cur_line.newProcessid
-            let cur_enterpriseName = cur_line.enterpriseName+"（" + cur_line.apply_enter_address+"）"
-            // console.log(cur_url, cur_applySn, cur_enterpriseName, cur_line.newProcessid, cur_line.productName, cur_line.provinceConfirm, cur_line.apply_enter_address)
-            //发送到dis_pharma_website的数据库中
+            for (let item in company_list) {
+                let cur_line = company_list[item]
+                let off = item.is_off =="Y" ? "（已注销）":"";
+                let cur_applySn = cur_line.applySn + "" + off
+                let cur_url = baseURL + "itownet/hzp_ba/fw/pz.jsp?processid=" + cur_line.processid + "&nid=" + cur_line.newProcessid
+                let cur_enterpriseName = cur_line.enterpriseName+"（" + cur_line.apply_enter_address+"）"
+                // console.log(cur_url, cur_applySn, cur_enterpriseName, cur_line.newProcessid, cur_line.productName, cur_line.provinceConfirm, cur_line.apply_enter_address)
+                //发送到dis_pharma_website的数据库中
 
-            dict_records.push({'applySn': cur_applySn, 'url': cur_url, 'enterpriseName': cur_enterpriseName, 'date': cur_line.provinceConfirm, 'productname': cur_line.productName});
-            // $.ajax({
-            //     type: 'POST',
-            //     url: "http://127.0.0.1:5000/postDummydata",
-            //     data: {'applySn': cur_applySn, 'url': cur_url, 'enterpriseName': cur_enterpriseName, 'date': cur_line.provinceConfirm, 'productname': cur_line.productName},
-            //     success: function(res) {
-            //         // console.log('done');
-            //     }
-            // });
-        }
-        $.ajax({
-            type: 'POST',
-            url: "http://127.0.0.1:5000/postDummydata",
-            data: {'records': dict_records},
-            success: function(res) {
-                // console.log('done');
+                dict_records.push({'applySn': cur_applySn, 'url': cur_url, 'enterpriseName': cur_enterpriseName, 'date': cur_line.provinceConfirm, 'productname': cur_line.productName});
+                // $.ajax({
+                //     type: 'POST',
+                //     url: "http://127.0.0.1:5000/postDummydata",
+                //     data: {'applySn': cur_applySn, 'url': cur_url, 'enterpriseName': cur_enterpriseName, 'date': cur_line.provinceConfirm, 'productname': cur_line.productName},
+                //     success: function(res) {
+                //         // console.log('done');
+                //     }
+                // });
             }
-        });
-        handler.next(response)
+            if (dict_records.length > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: "http://127.0.0.1:5000/postDummydata",
+                    data: {'records': dict_records},
+                    success: function(res) {
+                        // console.log('done');
+                    }
+                });
+            }
+            handler.next(response)
+        }
     }
 })
