@@ -22,6 +22,8 @@ HEADER = {
     "Connection": "keep-alive"
 }
 
+ALL_STOCKS_INFO = "http://www.cninfo.com.cn/new/data/szse_stock.json"
+
 # pageNum: current page
 # searchKey: 回购, etc.
 # seDate: 开始~结束
