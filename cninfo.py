@@ -14,7 +14,7 @@ print(today.strftime('%Y-%m-%d'), yesterday.strftime('%Y-%m-%d'))
 # Define data file path
 file_path = 'C:\\上市公司公告\\回购\\'
 
-if not os.path.exists(today.strftime('%Y-%m-%d')):
+if not os.path.exists(file_path + today.strftime('%Y-%m-%d')):
     os.makedirs(file_path + today.strftime('%Y-%m-%d'))
 # CNINFO's metadata
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
