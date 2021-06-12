@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import json
 import urllib.request
 import os
+import sys
 import urllib.parse
 
 today = datetime.now()
@@ -13,6 +14,9 @@ print(today.strftime('%Y-%m-%d'), yesterday.strftime('%Y-%m-%d'))
 
 # Define data file path
 file_path = 'C:\\上市公司公告\\回购\\'
+if len(sys.argv) > 1:
+    file_path = sys.argv[1]
+print(file_path)
 
 if not os.path.exists(file_path + today.strftime('%Y-%m-%d')):
     os.makedirs(file_path + today.strftime('%Y-%m-%d'))
